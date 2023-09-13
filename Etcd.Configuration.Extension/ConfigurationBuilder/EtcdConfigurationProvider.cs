@@ -33,7 +33,6 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
             _etcdClient = etcdClient;
         }
 
-
         public override void Load()
         {
             if (_watcher != null)
@@ -58,6 +57,18 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
             if (_etcdClient == null) return;
             try
             {
+                Grpc.Core.Metadata? headers = null;
+                if (!string.IsNullOrEmpty(_etcdConfigurationSource.UserName) && !string.IsNullOrEmpty(_etcdConfigurationSource.Password))
+                {
+                    var authRes = _etcdClient.Authenticate(new Etcdserverpb.AuthenticateRequest()
+                    {
+                        Name = _etcdConfigurationSource.UserName,
+                        Password = _etcdConfigurationSource.Password
+                    });
+                    headers = new Grpc.Core.Metadata() {
+                        new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
+                    };
+                }
                 var keys = _etcdConfigurationSource.Keys.GenerateKeys()?.Select(x => x.KeyName)?.ToArray();
                 _etcdClient.Watch(keys, (x) =>
                 {
@@ -66,13 +77,14 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                     {
                         DoLoad(true).GetAwaiter().GetResult();
                     }
-                }, cancellationToken: cancellationToken);
+                }, 
+                headers: headers,
+                cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {
                 _etcdConfigurationSource.OnWatchFailure?.Invoke(new EtcdConfigWatchException("Watch Failed", ex));
             }
-            
         }
 
         /// <summary>
@@ -85,11 +97,23 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
             if (_etcdClient == null) return;
             try
             {
+                Grpc.Core.Metadata? headers = null;
+                if (!string.IsNullOrEmpty(_etcdConfigurationSource.UserName) && !string.IsNullOrEmpty(_etcdConfigurationSource.Password))
+                {
+                    var authRes = _etcdClient.Authenticate(new Etcdserverpb.AuthenticateRequest()
+                    {
+                        Name = _etcdConfigurationSource.UserName,
+                        Password = _etcdConfigurationSource.Password
+                    });
+                    headers = new Grpc.Core.Metadata() {
+                        new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
+                    };
+                }
                 Dictionary<string,string?> data = new Dictionary<string,string?>();
                 var keys = _etcdConfigurationSource.Keys.GenerateKeys();
                 foreach (var key in keys)
                 {
-                    var value = await _etcdClient.GetValAsync(key.KeyName);
+                    var value = await _etcdClient.GetValAsync(key.KeyName, headers);
                     switch (key.ValueType)
                     {
                         case ValueTypes.JSON:
@@ -115,7 +139,6 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                     _etcdConfigurationSource.OnLoadFailure?.Invoke(new EtcdConfigOnLoadException($"Load Failed", ex));
                 
             }
-
         }
 
 

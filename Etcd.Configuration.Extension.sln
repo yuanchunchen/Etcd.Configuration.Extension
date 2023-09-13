@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{DF4D5885
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Etcd.Configuration.Extension.Unit.Test", "Etcd.Configuration.Extension.Unit.Test\Etcd.Configuration.Extension.Unit.Test.csproj", "{4A9728DF-B006-4AF9-8312-E9BC995AA997}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Etcd.Configuration.Extension.API.Test.50", "Etcd.Configuration.Extension.API.Test.50\Etcd.Configuration.Extension.API.Test.50.csproj", "{26F1EB1D-8B2F-40DC-9E56-7E78E21A8508}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Etcd.Configuration.Extension.API.Test.60", "Etcd.Configuration.Extension.API.Test.60\Etcd.Configuration.Extension.API.Test.60.csproj", "{B2B1EBD5-C122-4A72-8C53-123B4E6FA2B8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Etcd.Configuration.Extension.API.Test.70", "Etcd.Configuration.Extension.API.Test.70\Etcd.Configuration.Extension.API.Test.70.csproj", "{8FD21167-7BCF-4FE7-A208-89097DECA17D}"
@@ -29,10 +27,6 @@ Global
 		{4A9728DF-B006-4AF9-8312-E9BC995AA997}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A9728DF-B006-4AF9-8312-E9BC995AA997}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A9728DF-B006-4AF9-8312-E9BC995AA997}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26F1EB1D-8B2F-40DC-9E56-7E78E21A8508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26F1EB1D-8B2F-40DC-9E56-7E78E21A8508}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26F1EB1D-8B2F-40DC-9E56-7E78E21A8508}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26F1EB1D-8B2F-40DC-9E56-7E78E21A8508}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2B1EBD5-C122-4A72-8C53-123B4E6FA2B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2B1EBD5-C122-4A72-8C53-123B4E6FA2B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2B1EBD5-C122-4A72-8C53-123B4E6FA2B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,7 +41,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4A9728DF-B006-4AF9-8312-E9BC995AA997} = {DF4D5885-F61D-406C-9C65-7647DF32F389}
-		{26F1EB1D-8B2F-40DC-9E56-7E78E21A8508} = {DF4D5885-F61D-406C-9C65-7647DF32F389}
 		{B2B1EBD5-C122-4A72-8C53-123B4E6FA2B8} = {DF4D5885-F61D-406C-9C65-7647DF32F389}
 		{8FD21167-7BCF-4FE7-A208-89097DECA17D} = {DF4D5885-F61D-406C-9C65-7647DF32F389}
 	EndGlobalSection
