@@ -39,7 +39,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                 return;
             var cancellationToken = _cancellationTokenSource.Token;
 
-            DoLoad(false).GetAwaiter().GetResult();
+            DoLoad(false, cancellationToken).GetAwaiter().GetResult();
 
             // Polling starts after the initial load to ensure no concurrent access to the key from this instance
             if (_etcdConfigurationSource.ReloadOnChange)
@@ -64,7 +64,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                     {
                         Name = _etcdConfigurationSource.UserName,
                         Password = _etcdConfigurationSource.Password
-                    });
+                    }, cancellationToken: cancellationToken);
                     headers = new Grpc.Core.Metadata() {
                         new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
                     };
@@ -75,7 +75,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                     var data = x?.Where(y => (y?.Type == Mvccpb.Event.Types.EventType.Put || y?.Type == Mvccpb.Event.Types.EventType.Delete));
                     if (data != null && data.Any())
                     {
-                        DoLoad(true).GetAwaiter().GetResult();
+                        DoLoad(true, cancellationToken).GetAwaiter().GetResult();
                     }
                 }, 
                 headers: headers,
@@ -84,6 +84,18 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
             catch (Exception ex)
             {
                 _etcdConfigurationSource.OnWatchFailure?.Invoke(new EtcdConfigWatchException("Watch Failed", ex));
+
+                if (_watcher != null)
+                {
+                    _watcher = null;
+                    _ = new System.Threading.Timer(o =>
+                    {
+                        _watcher = Task.Run(() => Watcher(cancellationToken), cancellationToken);
+                    },
+                    this,
+                    TimeSpan.FromMilliseconds(15000),
+                    TimeSpan.FromMilliseconds(Timeout.Infinite));
+                }
             }
         }
 
@@ -92,7 +104,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
         /// </summary>
         /// <param name="isReload">Whether it is a Reload or First Load</param>
         /// <returns>Task</returns>
-        private async Task DoLoad(bool isReload)
+        private async Task DoLoad(bool isReload, CancellationToken cancellationToken)
         {
             if (_etcdClient == null) return;
             try
@@ -104,7 +116,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                     {
                         Name = _etcdConfigurationSource.UserName,
                         Password = _etcdConfigurationSource.Password
-                    });
+                    }, cancellationToken: cancellationToken);
                     headers = new Grpc.Core.Metadata() {
                         new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
                     };
@@ -125,7 +137,6 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                         default:
                             break;
                     }
-
                 }
                 Data= data;
                 if (isReload)
@@ -136,8 +147,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                 if (isReload)
                     _etcdConfigurationSource.OnLoadFailure?.Invoke(new EtcdConfigOnLoadException($"Load Failed during Reload", ex));
                 else
-                    _etcdConfigurationSource.OnLoadFailure?.Invoke(new EtcdConfigOnLoadException($"Load Failed", ex));
-                
+                    _etcdConfigurationSource.OnLoadFailure?.Invoke(new EtcdConfigOnLoadException($"Load Failed", ex));                
             }
         }
 
