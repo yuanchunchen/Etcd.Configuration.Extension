@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Etcd.Configuration.Extension.API.Test._60</RootNamespace>
+    <RootNamespace>Etcd.Configuration.Extension.API.Test._80</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

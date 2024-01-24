@@ -2,8 +2,8 @@
 
   <PropertyGroup>
 	<TargetFrameworks Condition="'$(LibraryFrameworks)'==''">
-		net6.0;net7.0
-	</TargetFrameworks>
+    net6.0;net7.0;net8.0
+  </TargetFrameworks>
 	<TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
 	<RootNamespace>Etcd.Configuration.Extension</RootNamespace>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,15 +14,15 @@
 	<RepositoryUrl>https://github.com/arkapravasinha/Etcd.Configuration.Extension</RepositoryUrl>
 	<PackageProjectUrl>https://github.com/arkapravasinha/Etcd.Configuration.Extension</PackageProjectUrl>
 	<SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
-	<Version>2.0.5-beta.240124.1</Version>
+	<Version>2.0.5-beta.240124.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotnet-etcd" Version="6.2.0-beta.230913.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+    <PackageReference Include="dotnet-etcd" Version="7.0.0-beta.240124.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.1" />
 	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 	  <_Parameter1>Etcd.Configuration.Extension.Unit.Test</_Parameter1>
 	</AssemblyAttribute>

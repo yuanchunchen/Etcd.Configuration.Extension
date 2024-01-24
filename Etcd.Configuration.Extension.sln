@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Etcd.Configuration.Extensio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Etcd.Configuration.Extension.API.Test.70", "Etcd.Configuration.Extension.API.Test.70\Etcd.Configuration.Extension.API.Test.70.csproj", "{8FD21167-7BCF-4FE7-A208-89097DECA17D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Etcd.Configuration.Extension.API.Test.80", "Etcd.Configuration.Extension.API.Test.80\Etcd.Configuration.Extension.API.Test.80.csproj", "{B8E0B731-27FE-41E1-A9C0-293555D3544E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{8FD21167-7BCF-4FE7-A208-89097DECA17D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FD21167-7BCF-4FE7-A208-89097DECA17D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FD21167-7BCF-4FE7-A208-89097DECA17D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8E0B731-27FE-41E1-A9C0-293555D3544E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8E0B731-27FE-41E1-A9C0-293555D3544E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8E0B731-27FE-41E1-A9C0-293555D3544E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8E0B731-27FE-41E1-A9C0-293555D3544E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,6 +49,7 @@ Global
 		{4A9728DF-B006-4AF9-8312-E9BC995AA997} = {DF4D5885-F61D-406C-9C65-7647DF32F389}
 		{B2B1EBD5-C122-4A72-8C53-123B4E6FA2B8} = {DF4D5885-F61D-406C-9C65-7647DF32F389}
 		{8FD21167-7BCF-4FE7-A208-89097DECA17D} = {DF4D5885-F61D-406C-9C65-7647DF32F389}
+		{B8E0B731-27FE-41E1-A9C0-293555D3544E} = {DF4D5885-F61D-406C-9C65-7647DF32F389}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8E195F1D-E4D7-419E-8076-E17FBA66B08E}
