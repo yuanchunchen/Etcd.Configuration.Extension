@@ -11,6 +11,8 @@ using Etcd.Configuration.Extension.ConfigurationSource;
 using Etcd.Configuration.Extension.Models;
 using System.IO;
 using dotnet_etcd.interfaces;
+using dotnet_etcd;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Etcd.Configuration.Extension.ConfigurationBuilder
 {
@@ -23,10 +25,10 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
         private readonly EtcdConfigurationSource _etcdConfigurationSource;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IEtcdClient _etcdClient;
-        private Task? _watcher;
+        private bool _needReLoad = false;
 
         //Constructor
-        public EtcdConfigurationProvider( EtcdConfigurationSource etcdConfigurationSource, IEtcdClient etcdClient)
+        public EtcdConfigurationProvider(EtcdConfigurationSource etcdConfigurationSource, IEtcdClient etcdClient)
         {
             _etcdConfigurationSource = etcdConfigurationSource;
             _cancellationTokenSource = new CancellationTokenSource();
@@ -35,16 +37,16 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
 
         public override void Load()
         {
-            if (_watcher != null)
-                return;
-            var cancellationToken = _cancellationTokenSource.Token;
+            if (_needReLoad == true) return;
+            _needReLoad = true;
 
+            var cancellationToken = _cancellationTokenSource.Token;
             DoLoad(false, cancellationToken).GetAwaiter().GetResult();
 
             // Polling starts after the initial load to ensure no concurrent access to the key from this instance
             if (_etcdConfigurationSource.ReloadOnChange)
             {
-                _watcher = Task.Run(() => Watcher(cancellationToken), cancellationToken);
+                _ = Task.Run(() => Watcher(cancellationToken), cancellationToken);
             }
         }
 
@@ -77,20 +79,25 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                     {
                         DoLoad(true, cancellationToken).GetAwaiter().GetResult();
                     }
-                }, 
+                },
                 headers: headers,
                 cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {
                 _etcdConfigurationSource.OnWatchFailure?.Invoke(new EtcdConfigWatchException("Watch Failed", ex));
-
-                if (_watcher != null)
+            }
+            finally
+            {
+                if (!cancellationToken.IsCancellationRequested)
                 {
-                    _watcher = null;
                     _ = new System.Threading.Timer(o =>
                     {
-                        _watcher = Task.Run(() => Watcher(cancellationToken), cancellationToken);
+                        if (!cancellationToken.IsCancellationRequested)
+                        {
+                            DoLoad(true, cancellationToken).GetAwaiter().GetResult();
+                            _ = Task.Run(() => Watcher(cancellationToken), cancellationToken);
+                        }
                     },
                     this,
                     TimeSpan.FromMilliseconds(15000),
@@ -121,7 +128,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                         new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
                     };
                 }
-                Dictionary<string,string?> data = new Dictionary<string,string?>();
+                Dictionary<string, string?> data = new Dictionary<string, string?>();
                 var keys = _etcdConfigurationSource.Keys.GenerateKeys();
                 foreach (var key in keys)
                 {
@@ -129,7 +136,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                     switch (key.ValueType)
                     {
                         case ValueTypes.JSON:
-                            LoadJsonConfiguration(value,ref data, key);
+                            LoadJsonConfiguration(value, ref data, key);
                             break;
                         case ValueTypes.STRING:
                             LoadStringConfiguration(ref data, key, value);
@@ -138,7 +145,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                             break;
                     }
                 }
-                Data= data;
+                Data = data;
                 if (isReload)
                     OnReload();
             }
@@ -147,7 +154,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                 if (isReload)
                     _etcdConfigurationSource.OnLoadFailure?.Invoke(new EtcdConfigOnLoadException($"Load Failed during Reload", ex));
                 else
-                    _etcdConfigurationSource.OnLoadFailure?.Invoke(new EtcdConfigOnLoadException($"Load Failed", ex));                
+                    _etcdConfigurationSource.OnLoadFailure?.Invoke(new EtcdConfigOnLoadException($"Load Failed", ex));
             }
         }
 
@@ -187,13 +194,13 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
         /// <param name="jsondata"></param>
         /// <param name="data"></param>
         /// <param name="key"></param>
-        private void LoadJsonConfiguration(string jsondata, ref Dictionary<string,string?> data, Key key)
+        private void LoadJsonConfiguration(string jsondata, ref Dictionary<string, string?> data, Key key)
         {
             if (string.IsNullOrEmpty(jsondata) || data == null)
                 return;
-            using Stream memoryStream=new MemoryStream(Encoding.UTF8.GetBytes(jsondata));
+            using Stream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(jsondata));
             var kvpairs = _etcdConfigurationSource.JsonParser.Parse(memoryStream);
-            foreach(var kv in kvpairs)
+            foreach (var kv in kvpairs)
             {
                 string KeyPath = kv.Key;
                 if (_etcdConfigurationSource.UseFullPathForKeys)
