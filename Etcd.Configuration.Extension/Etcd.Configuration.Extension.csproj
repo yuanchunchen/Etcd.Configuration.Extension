@@ -14,11 +14,11 @@
 	<RepositoryUrl>https://github.com/arkapravasinha/Etcd.Configuration.Extension</RepositoryUrl>
 	<PackageProjectUrl>https://github.com/arkapravasinha/Etcd.Configuration.Extension</PackageProjectUrl>
 	<SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
-	<Version>2.0.5-beta.240124.2</Version>
+	<Version>2.0.5-beta.240125.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotnet-etcd" Version="7.0.0-beta.240124.1" />
+    <PackageReference Include="dotnet-etcd" Version="7.0.0-beta.240125.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
