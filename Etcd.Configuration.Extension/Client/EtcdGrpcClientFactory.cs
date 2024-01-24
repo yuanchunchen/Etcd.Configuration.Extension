@@ -2,8 +2,11 @@
 using Etcd.Configuration.Extension.ConfigurationSource;
 using Etcd.Configuration.Extension.Exceptions;
 using Grpc.Core;
+using Grpc.Core.Interceptors;
 using Grpc.Net.Client.Configuration;
 using System;
+using System.Net.Http;
+using System.Runtime.Intrinsics.X86;
 
 namespace Etcd.Configuration.Extension.Client
 {
@@ -25,25 +28,55 @@ namespace Etcd.Configuration.Extension.Client
         {
             try 
             {
-                var client = new EtcdClient(_etcdConfigurationSource.Hosts, _etcdConfigurationSource.Port, _etcdConfigurationSource.ServerName,
-                                             _etcdConfigurationSource.HttpClientHandlerForEtcd, _etcdConfigurationSource.Ssl, false, null,
-                                             new MethodConfig()
-                                             {
-                                                 Names = { MethodName.Default },
-                                                 RetryPolicy = new RetryPolicy
-                                                 {
-                                                     MaxAttempts = _etcdConfigurationSource.MaxAttempts,
-                                                     InitialBackoff = TimeSpan.FromSeconds(_etcdConfigurationSource.InitialBackoffSeconds),
-                                                     MaxBackoff = TimeSpan.FromSeconds(_etcdConfigurationSource.MaxBackoffSeconds),
-                                                     BackoffMultiplier = _etcdConfigurationSource.BackoffMultiplier,
-                                                     RetryableStatusCodes = { StatusCode.Unavailable }
-                                                 }
-                                             },
-                                             new RetryThrottlingPolicy()
-                                             {
-                                                 MaxTokens = _etcdConfigurationSource.MaxTokens,
-                                                 TokenRatio = _etcdConfigurationSource.TokenRatio
-                                             });
+                var client = new EtcdClient(
+                    connectionString: _etcdConfigurationSource.Hosts,
+                    port: _etcdConfigurationSource.Port,
+                    serverName: _etcdConfigurationSource.ServerName, 
+                    configureChannelOptions: (options) =>
+                    {
+                        HttpClientHandler? handler = _etcdConfigurationSource.HttpClientHandlerForEtcd;
+                        bool ssl = _etcdConfigurationSource.Ssl;
+                        bool useLegacyRpcExceptionForCancellation = false;
+                        MethodConfig grpcMethodConfig = new()
+                        {
+                            Names = { MethodName.Default },
+                            RetryPolicy = new RetryPolicy
+                            {
+                                MaxAttempts = _etcdConfigurationSource.MaxAttempts,
+                                InitialBackoff = TimeSpan.FromSeconds(_etcdConfigurationSource.InitialBackoffSeconds),
+                                MaxBackoff = TimeSpan.FromSeconds(_etcdConfigurationSource.MaxBackoffSeconds),
+                                BackoffMultiplier = _etcdConfigurationSource.BackoffMultiplier,
+                                RetryableStatusCodes = { StatusCode.Unavailable }
+                            }
+                        };
+                        RetryThrottlingPolicy grpcRetryThrottlingPolicy = new()
+                        {
+                            MaxTokens = _etcdConfigurationSource.MaxTokens,
+                            TokenRatio = _etcdConfigurationSource.TokenRatio
+                        };
+
+                        options.HttpHandler = handler;
+                        options.ThrowOperationCanceledOnCancellation = !useLegacyRpcExceptionForCancellation;
+                        options.ServiceConfig = new ServiceConfig
+                        {
+                            MethodConfigs = { grpcMethodConfig },
+                            RetryThrottling = grpcRetryThrottlingPolicy,
+                            LoadBalancingConfigs = { new RoundRobinConfig() },
+                        };
+
+                        if (ssl)
+                        {
+                            options.Credentials = new SslCredentials();
+                        }
+                        else
+                        {
+#if NETCOREAPP3_1 || NETCOREAPP3_0
+                AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+#endif
+                            options.Credentials = ChannelCredentials.Insecure;
+                        }
+
+                    }, interceptors: null);
                 return client;
             }
             catch(Exception ex)
