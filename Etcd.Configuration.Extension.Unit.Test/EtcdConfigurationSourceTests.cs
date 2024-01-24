@@ -26,7 +26,7 @@ namespace Etcd.Configuration.Extension.Unit.Test
             source.MaxBackoffSeconds = 1;
             source.MaxTokens = 1;
             source.TokenRatio= 1;
-            source.HttpClientHandlerForEtcd=new HttpClientHandler();
+            source.SocketsHttpHandlerForEtcd=new();
             source.Ssl = true;
             source.OnWatchFailure = (x) =>
             {
@@ -39,7 +39,7 @@ namespace Etcd.Configuration.Extension.Unit.Test
             Assert.AreEqual(source.Port, 1);
             Assert.AreEqual(source.BackoffMultiplier, 1);
             Assert.AreEqual(source.Ssl, true);
-            Assert.IsNotNull(source.HttpClientHandlerForEtcd);
+            Assert.IsNotNull(source.SocketsHttpHandlerForEtcd);
             Assert.ThrowsException<EtcdConfigWatchException>(()=> { source.OnWatchFailure.Invoke(new EtcdConfigWatchException("test", new Exception())); }); 
 
         }

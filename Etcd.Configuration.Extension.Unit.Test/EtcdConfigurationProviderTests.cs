@@ -17,7 +17,7 @@ namespace Etcd.Configuration.Extension.Unit.Test
     [TestClass]
     public class EtcdConfigurationProviderTests
     {
-        private Mock<IEtcdClient> _etcdClientMock;
+        private Mock<IEtcdClient>_etcdClientMock;
         private EtcdConfigurationSource _configurationSource;
 
         [TestInitialize] 

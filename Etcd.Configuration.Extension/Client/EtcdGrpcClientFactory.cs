@@ -34,7 +34,7 @@ namespace Etcd.Configuration.Extension.Client
                     serverName: _etcdConfigurationSource.ServerName, 
                     configureChannelOptions: (options) =>
                     {
-                        HttpClientHandler? handler = _etcdConfigurationSource.HttpClientHandlerForEtcd;
+                        SocketsHttpHandler? handler = _etcdConfigurationSource.SocketsHttpHandlerForEtcd;
                         bool ssl = _etcdConfigurationSource.Ssl;
                         bool useLegacyRpcExceptionForCancellation = false;
                         MethodConfig grpcMethodConfig = new()

@@ -22,7 +22,7 @@ namespace Etcd.Configuration.Extension.ConfigurationSource
         /// <summary>
         /// ETCD Grpc Client Handler, useful to write custom handlers, defaults to null
         /// </summary>
-        HttpClientHandler? HttpClientHandlerForEtcd { get; set; }
+        SocketsHttpHandler? SocketsHttpHandlerForEtcd { get; set; }
 
         /// <summary>
         /// ETCD Grpc Client InitialBackoffSeconds, Defaults to 1

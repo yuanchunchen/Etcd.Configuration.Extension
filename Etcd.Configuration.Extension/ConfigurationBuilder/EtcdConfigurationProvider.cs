@@ -24,11 +24,11 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
         //Private Variables
         private readonly EtcdConfigurationSource _etcdConfigurationSource;
         private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly IEtcdClient _etcdClient;
+        private readonly IEtcdClient? _etcdClient;
         private bool _needReLoad = false;
 
         //Constructor
-        public EtcdConfigurationProvider(EtcdConfigurationSource etcdConfigurationSource, IEtcdClient etcdClient)
+        public EtcdConfigurationProvider(EtcdConfigurationSource etcdConfigurationSource, IEtcdClient? etcdClient)
         {
             _etcdConfigurationSource = etcdConfigurationSource;
             _cancellationTokenSource = new CancellationTokenSource();

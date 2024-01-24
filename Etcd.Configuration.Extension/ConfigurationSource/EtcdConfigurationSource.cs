@@ -31,7 +31,7 @@ namespace Etcd.Configuration.Extension.ConfigurationSource
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
 
-        public HttpClientHandler? HttpClientHandlerForEtcd { get; set; } = null;
+        public SocketsHttpHandler? SocketsHttpHandlerForEtcd { get; set; } = null;
 
         public bool Ssl { get; set; } = false;
 

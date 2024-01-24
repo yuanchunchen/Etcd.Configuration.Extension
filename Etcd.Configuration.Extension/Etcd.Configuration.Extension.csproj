@@ -14,7 +14,7 @@
 	<RepositoryUrl>https://github.com/arkapravasinha/Etcd.Configuration.Extension</RepositoryUrl>
 	<PackageProjectUrl>https://github.com/arkapravasinha/Etcd.Configuration.Extension</PackageProjectUrl>
 	<SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
-	<Version>2.0.5-beta.240125.1</Version>
+	<Version>2.0.5-beta.240125.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
