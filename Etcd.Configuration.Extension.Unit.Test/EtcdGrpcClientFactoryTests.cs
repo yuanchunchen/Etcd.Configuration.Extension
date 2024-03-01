@@ -1,14 +1,7 @@
 ﻿using Etcd.Configuration.Extension.Client;
 using Etcd.Configuration.Extension.ConfigurationSource;
 using Etcd.Configuration.Extension.Exceptions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using NuGet.Frameworks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Etcd.Configuration.Extension.Unit.Test
 {
