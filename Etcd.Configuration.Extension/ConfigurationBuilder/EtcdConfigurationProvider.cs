@@ -62,11 +62,11 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                 Grpc.Core.Metadata? headers = null;
                 if (!string.IsNullOrEmpty(_etcdConfigurationSource.UserName) && !string.IsNullOrEmpty(_etcdConfigurationSource.Password))
                 {
-                    var authRes = _etcdClient.Authenticate(new Etcdserverpb.AuthenticateRequest()
+                    var authRes = _etcdClient.AuthenticateAsync(new Etcdserverpb.AuthenticateRequest()
                     {
                         Name = _etcdConfigurationSource.UserName,
                         Password = _etcdConfigurationSource.Password
-                    }, cancellationToken: cancellationToken);
+                    }, cancellationToken: cancellationToken).GetAwaiter().GetResult();
                     headers = new Grpc.Core.Metadata() {
                         new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
                     };
@@ -119,11 +119,11 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
                 Grpc.Core.Metadata? headers = null;
                 if (!string.IsNullOrEmpty(_etcdConfigurationSource.UserName) && !string.IsNullOrEmpty(_etcdConfigurationSource.Password))
                 {
-                    var authRes = _etcdClient.Authenticate(new Etcdserverpb.AuthenticateRequest()
+                    var authRes = _etcdClient.AuthenticateAsync(new Etcdserverpb.AuthenticateRequest()
                     {
                         Name = _etcdConfigurationSource.UserName,
                         Password = _etcdConfigurationSource.Password
-                    }, cancellationToken: cancellationToken);
+                    }, cancellationToken: cancellationToken).GetAwaiter().GetResult();
                     headers = new Grpc.Core.Metadata() {
                         new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
                     };
