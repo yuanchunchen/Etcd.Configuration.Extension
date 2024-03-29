@@ -1,18 +1,18 @@
-﻿using Etcd.Configuration.Extension.Utils;
+﻿using dotnet_etcd.interfaces;
+using Etcd.Configuration.Extension.ConfigurationSource;
+using Etcd.Configuration.Extension.Exceptions;
+using Etcd.Configuration.Extension.Models;
+using Etcd.Configuration.Extension.Utils;
+using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Etcd.Configuration.Extension.Exceptions;
-using Etcd.Configuration.Extension.ConfigurationSource;
-using Etcd.Configuration.Extension.Models;
-using System.IO;
-using dotnet_etcd.interfaces;
-using dotnet_etcd;
-using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Etcd.Configuration.Extension.ConfigurationBuilder
 {
@@ -27,12 +27,38 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
         private readonly IEtcdClient? _etcdClient;
         private bool _needReLoad = false;
 
+        private Metadata? _headers = null;
+        private DateTime _lastAuth = DateTime.MinValue;
+
         //Constructor
         public EtcdConfigurationProvider(EtcdConfigurationSource etcdConfigurationSource, IEtcdClient? etcdClient)
         {
             _etcdConfigurationSource = etcdConfigurationSource;
             _cancellationTokenSource = new CancellationTokenSource();
             _etcdClient = etcdClient;
+        }
+
+        private async Task<Metadata?> DoAuthAsync(CancellationToken cancellationToken)
+        {
+            // Auth
+            if (_headers == null || DateTime.Now > _lastAuth)
+            {
+                _headers = null;
+                _lastAuth = DateTime.Now.AddSeconds(300);
+                if (!string.IsNullOrWhiteSpace(_etcdConfigurationSource.UserName) &&
+                    !string.IsNullOrWhiteSpace(_etcdConfigurationSource.Password))
+                {
+                    var authRes = await _etcdClient.AuthenticateAsync(new Etcdserverpb.AuthenticateRequest()
+                    {
+                        Name = _etcdConfigurationSource.UserName,
+                        Password = _etcdConfigurationSource.Password
+                    }, cancellationToken: cancellationToken);
+                    _headers = new Grpc.Core.Metadata() {
+                        new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
+                    };
+                }
+            }
+            return _headers;
         }
 
         public override void Load()
@@ -59,18 +85,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
             if (_etcdClient == null) return;
             try
             {
-                Grpc.Core.Metadata? headers = null;
-                if (!string.IsNullOrEmpty(_etcdConfigurationSource.UserName) && !string.IsNullOrEmpty(_etcdConfigurationSource.Password))
-                {
-                    var authRes = _etcdClient.AuthenticateAsync(new Etcdserverpb.AuthenticateRequest()
-                    {
-                        Name = _etcdConfigurationSource.UserName,
-                        Password = _etcdConfigurationSource.Password
-                    }, cancellationToken: cancellationToken).GetAwaiter().GetResult();
-                    headers = new Grpc.Core.Metadata() {
-                        new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
-                    };
-                }
+                Metadata? headers = DoAuthAsync(cancellationToken).GetAwaiter().GetResult();
                 var keys = _etcdConfigurationSource.Keys.GenerateKeys()?.Select(x => x.KeyName)?.ToArray();
                 _etcdClient.Watch(keys, (x) =>
                 {
@@ -116,18 +131,7 @@ namespace Etcd.Configuration.Extension.ConfigurationBuilder
             if (_etcdClient == null) return;
             try
             {
-                Grpc.Core.Metadata? headers = null;
-                if (!string.IsNullOrEmpty(_etcdConfigurationSource.UserName) && !string.IsNullOrEmpty(_etcdConfigurationSource.Password))
-                {
-                    var authRes = _etcdClient.AuthenticateAsync(new Etcdserverpb.AuthenticateRequest()
-                    {
-                        Name = _etcdConfigurationSource.UserName,
-                        Password = _etcdConfigurationSource.Password
-                    }, cancellationToken: cancellationToken).GetAwaiter().GetResult();
-                    headers = new Grpc.Core.Metadata() {
-                        new Grpc.Core.Metadata.Entry("Authorization", authRes.Token)
-                    };
-                }
+                Metadata? headers = await DoAuthAsync(cancellationToken);
                 Dictionary<string, string?> data = new Dictionary<string, string?>();
                 var keys = _etcdConfigurationSource.Keys.GenerateKeys();
                 foreach (var key in keys)
