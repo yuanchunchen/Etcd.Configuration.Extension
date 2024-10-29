@@ -14,14 +14,14 @@
 	<RepositoryUrl>https://github.com/arkapravasinha/Etcd.Configuration.Extension</RepositoryUrl>
 	<PackageProjectUrl>https://github.com/arkapravasinha/Etcd.Configuration.Extension</PackageProjectUrl>
 	<SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
-	<Version>2.0.5-beta.240528.1</Version>
+	<Version>2.0.5-beta.241029.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotnet-etcd" Version="7.0.0-beta.240528.1" />
+    <PackageReference Include="dotnet-etcd" Version="7.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
 	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 	  <_Parameter1>Etcd.Configuration.Extension.Unit.Test</_Parameter1>
